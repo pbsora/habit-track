@@ -2,10 +2,10 @@ import { changeStatus, getHabitStatus } from "./storage.js";
 
 import { DateTime } from "luxon";
 
-const startDate = DateTime.fromISO("2023-08-12");
+const startDate = DateTime.fromISO("2023-09-24");
 
 // Generate the list of dates for the next 31 days
-const next31Days = Array.from({ length: 142 }, (_, index) =>
+const next31Days = Array.from({ length: 365 }, (_, index) =>
   startDate.plus({ days: index }).toFormat("yyyy-MM-dd")
 );
 

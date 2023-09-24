@@ -38,7 +38,7 @@ export function makeDays(number) {
   return days;
 }
 //If it doesn't exist, create a new one
-itemExists == false ? (days = makeDays(142)) : console.log("");
+itemExists == false ? (days = makeDays(365)) : console.log("");
 
 //Change habit status
 export function changeStatus(index, habit) {
