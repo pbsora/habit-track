@@ -83,13 +83,6 @@ const NewWeekDialog = ({
     if (!date || count < 1) return;
 
     const newWeek = new Week(date, count);
-    const totalWeeks = LocalStorage.get("weeks");
-
-    const weeks = totalWeeks
-      ? [...totalWeeks, newWeek]
-      : [newWeek];
-
-    LocalStorage.add("weeks", weeks);
 
     setWeeks((prev) => [...prev, newWeek]);
   };

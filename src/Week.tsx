@@ -75,6 +75,12 @@ const WeekItem = ({
     });
   };
 
+  const delWeek = (weekId: string) => {
+    setWeeks((prev: Week[]) => {
+      return prev.filter((week) => week.id !== weekId);
+    });
+  };
+
   return (
     <div className="w-full">
       <Dialog>
@@ -99,9 +105,19 @@ const WeekItem = ({
               onChange={(e) => setDesc(e.target.value)}
               value={desc}
             />
-            <Button className="w-full py-2 bg-white text-black hover:bg-slate-300">
-              Update
-            </Button>
+            <div className="flex flex-col gap-2">
+              <Button className="w-full py-2 bg-white text-black hover:bg-slate-300">
+                Update
+              </Button>
+              <Button
+                type="button"
+                onClick={() => delWeek(week.id)}
+                variant={"destructive"}
+                className="w-full py-2"
+              >
+                Delete
+              </Button>
+            </div>
           </form>
         </DialogContent>
       </Dialog>
