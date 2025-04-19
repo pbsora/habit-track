@@ -26,6 +26,18 @@ class LocalStorageWrapper {
     if (value) return JSON.parse(value);
     else return null;
   }
+
+  //Copy content of localstorage to clipboard
+  copyToClipboard(): void {
+    const data = this.storage.getItem("weeks");
+    if (data) {
+      navigator.clipboard.writeText(data).then(() => {
+        console.log("Copied to clipboard");
+      });
+    } else {
+      console.error("No data found in local storage");
+    }
+  }
 }
 
 const LocalStorage = new LocalStorageWrapper();

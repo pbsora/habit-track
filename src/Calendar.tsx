@@ -46,7 +46,7 @@ const CalendarOverlay = () => {
         <NewWeekDialog setWeeks={setWeeks} />
       </div>
       <div className="">
-        {weeks.length > 0 &&
+        {!!weeks.length &&
           weeks.map((week, i) => (
             <WeekItem
               week={week}
@@ -83,17 +83,28 @@ const NewWeekDialog = ({
     if (!date || count < 1) return;
 
     const newWeek = new Week(date, count);
+    LocalStorage.add("weeks", [
+      ...(LocalStorage.get("weeks") || []),
+      newWeek,
+    ]);
 
     setWeeks((prev) => [...prev, newWeek]);
   };
 
   return (
     <Dialog>
-      <DialogTrigger>
-        <Button variant={"ghost"} type="button">
-          <Plus size={24} />
+      <div className="flex items-center">
+        <DialogTrigger>
+          <Button variant={"ghost"} type="button">
+            <Plus size={24} />
+          </Button>
+        </DialogTrigger>
+        <Button
+          onClick={() => LocalStorage.copyToClipboard()}
+        >
+          Clipboard
         </Button>
-      </DialogTrigger>
+      </div>
       <DialogContent>
         <div className="absolute inset-0 m-auto flex items-center justify-center">
           <DialogTrigger asChild>
@@ -118,7 +129,7 @@ const NewWeekDialog = ({
                   htmlFor="count"
                   className="text-zinc-200 block text-lg mb-2"
                 >
-                  Number of days:
+                  Number of habits:
                 </label>
                 <input
                   type="number"
