@@ -39,8 +39,8 @@ const CalendarOverlay = () => {
       className="w-[70%] h-5/6 rounded-xl bg-zinc-900/70 overflow-y-auto"
       id="weeks"
     >
-      <div className="w-full h-12 items-center flex justify-between px-4 bg-red-500 text-white">
-        <h1 className="font-rem font-bold text-lg">
+      <div className="flex justify-between items-center px-4 w-full h-12 text-white bg-red-500">
+        <h1 className="text-lg font-bold font-rem">
           Weeks: {weeks.length}
         </h1>
         <NewWeekDialog setWeeks={setWeeks} />
@@ -68,21 +68,35 @@ const NewWeekDialog = ({
   const [date, setDate] = useState<Date | undefined>(
     new Date()
   );
-  const [count, setCount] = useState(1);
+  const [dayConfigs, setDayConfigs] = useState<{
+    [key: number]: number;
+  }>({ 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 });
 
-  const handleCount = (
-    e: React.ChangeEvent<HTMLInputElement>
+  const handleDayCount = (
+    dayIndex: number,
+    value: string
   ) => {
-    if (+e.target.value > 7 || +e.target.value < 1) return;
+    const numValue = parseInt(value) || 0;
+    if (numValue > 7 || numValue < 0) return;
 
-    setCount(+e.target.value);
+    setDayConfigs((prev) => ({
+      ...prev,
+      [dayIndex]: numValue,
+    }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!date || count < 1) return;
+    if (!date) return;
 
-    const newWeek = new Week(date, count);
+    const configs = Object.entries(dayConfigs).map(
+      ([dayIndex, taskCount]) => ({
+        dayIndex: parseInt(dayIndex),
+        taskCount,
+      })
+    );
+
+    const newWeek = new Week(date, configs);
     LocalStorage.add("weeks", [
       ...(LocalStorage.get("weeks") || []),
       newWeek,
@@ -106,12 +120,12 @@ const NewWeekDialog = ({
         </Button>
       </div>
       <DialogContent>
-        <div className="absolute inset-0 m-auto flex items-center justify-center">
+        <div className="flex absolute inset-0 justify-center items-center m-auto">
           <DialogTrigger asChild>
-            <div className="w-screen h-screen bg-zinc-900/70 absolute z-0" />
+            <div className="absolute z-0 w-screen h-screen bg-zinc-900/70" />
           </DialogTrigger>
           <form
-            className="p-10 w-4/6 h-5/6  bg-zinc-900 flex flex-col gap-6 z-10 rounded-xl"
+            className="flex z-10 flex-col gap-6 p-10 w-4/6 h-5/6 rounded-xl bg-zinc-900"
             onSubmit={(e) => handleSubmit(e)}
           >
             <h1 className="text-3xl text-zinc-200">
@@ -122,35 +136,60 @@ const NewWeekDialog = ({
                 mode="single"
                 selected={date}
                 onSelect={setDate}
-                className="rounded-md w-fit border"
+                className="rounded-md border w-fit"
               />
               <div className="w-2/4">
-                <label
-                  htmlFor="count"
-                  className="text-zinc-200 block text-lg mb-2"
-                >
-                  Number of habits:
-                </label>
-                <input
-                  type="number"
-                  id="count"
-                  name="count"
-                  className={`rounded-md border w-2/4 py-1 px-3 bg-zinc-900 text-white`}
-                  onChange={(e) => handleCount(e)}
-                  value={count}
-                />
-                <div className=" mt-3">
-                  {new Array(count).fill("").map((_, i) => (
+                <h2 className="mb-4 text-lg text-zinc-200">
+                  Habits per day:
+                </h2>
+                <div className="space-y-3">
+                  {[
+                    "Mon",
+                    "Tue",
+                    "Wed",
+                    "Thu",
+                    "Fri",
+                    "Sat",
+                    "Sun",
+                  ].map((day, index) => (
                     <div
-                      className={`${colors[i]} w-full h-6`}
-                    />
+                      key={day}
+                      className="flex gap-4 items-center"
+                    >
+                      <label className="w-12 text-zinc-200">
+                        {day}:
+                      </label>
+                      <input
+                        type="number"
+                        className="px-2 py-1 w-16 text-white rounded-md border bg-zinc-900"
+                        min="0"
+                        max="7"
+                        value={dayConfigs[index]}
+                        onChange={(e) =>
+                          handleDayCount(
+                            index,
+                            e.target.value
+                          )
+                        }
+                      />
+                      <div className="flex flex-1 gap-1">
+                        {Array.from({
+                          length: dayConfigs[index],
+                        }).map((_, i) => (
+                          <div
+                            key={i}
+                            className={`w-4 h-4 ${colors[i]}`}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
             </div>
             <Button
               type="submit"
-              className="bg-zinc-200 text-zinc-800 w-2/4 m-auto"
+              className="m-auto w-2/4 bg-zinc-200 text-zinc-800"
             >
               Add
             </Button>
